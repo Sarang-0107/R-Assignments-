@@ -1,0 +1,123 @@
+
+install.packages("tidyverse")
+library(tidyverse)
+library(dplyr)
+
+install.packages("sdtm.oak")
+library(sdtm.oak)
+
+install.packages("clinUtils")
+library(clinUtils)
+data(dataSDTMCDISCP01, package = "clinUtils")
+
+# These will be your SDTM domain data frames
+dm <- dataSDTMCDISCP01$DM
+ae <- dataSDTMCDISCP01$AE
+vs <- dataSDTMCDISCP01$VS
+lb <- dataSDTMCDISCP01$LB
+ex <- dataSDTMCDISCP01$EX
+View(dm)
+head(dm)
+head(ae)
+head(vs)
+head(lb)
+View(ex)
+#Select Core Identifiers from Any Domain
+names(lb)
+ae |> 
+  select(any_of(c("STUDYID", "USUBJID", "DOMAIN", "AESEQ")))
+cm |> 
+  select(any_of(c("STUDYID", "USUBJID", "DOMAIN", "LBSEQ")))
+
+dm |> 
+  select(any_of(c("STUDYID", "USUBJID", "DOMAIN", "SUBJID", "SITEID")))
+
+#Select All AE Variables from AE
+
+View(ae)
+View(dm)
+
+ae |> select(everything())
+
+#Select All Date Variables
+
+ae |> select(ends_with("DTC"))
+
+dm |> select(ends_with("DTC"))
+
+#Select Only Weight and Height from VS
+View(vs)
+vs |> filter(VSTEST %in% c("Height","Weight"))
+
+#Select All Result Columns from LB 'LBOR','LBST'
+
+View(lb)
+lb |> select(starts_with(c("LBOR","LBST")))
+
+lb |>  select(starts_with("LBOR"), starts_with("LBST"))
+
+##Select All Result Columns from LB 'DY','DTC'
+
+lb |>  glimpse() |>  select(contains("DY"), contains("DTC"))
+
+#Select All Character Columns (Metadata Review)
+
+lb |>  glimpse() |> select(where(is.character))
+
+#Select All Numeric Result Variables
+
+lb |>  glimpse() |>  select(where(is.numeric))
+
+#Select All Variables for Exposure (EX)
+
+ex |>  glimpse() |> select(everything()) 
+
+#Select All Timing Variables i,e DTC,DY
+
+ex |> glimpse() |> select(contains("DTC"), contains("DY"))
+
+#Select All Qualifiers in a Domain ,Only AE-specific columns
+
+ae |>  glimpse() |>  select(starts_with("AE"))
+
+#Reorder: Put Keys First STUDYID, DOMAIN, USUBJID, AESEQ
+
+ae |>  glimpse() |>  relocate(STUDYID, DOMAIN, USUBJID, AESEQ)
+
+#Select All "Standardized" Variables like LBSTRESC,LBSTRESN,LBSTRESU
+
+lb |>  glimpse() |> select(matches("^LBSTRES"))
+
+lb |> select(LBSTRESC,LBSTRESN,LBSTRESU)
+
+#Select All Test Codes like VSTESTCD,VSTEST
+
+vs |>  select(matches("^VSTEST"))
+
+vs |>  select(contains("VSTEST"))
+
+vs |>  select(matches("TEST(CD)?$"))
+
+#Select All Numeric Measurements + Subject ID
+
+vs |>  glimpse() |>  select(USUBJID, where(is.numeric))
+
+vs |>
+  select( where(is.numeric), USUBJID)
+
+#Select Variables Using Regex (Advanced) using RES,RESN,RESC
+
+vs |> select(contains("RES"))
+vs |> select(matches("RES$|RESN$|RESC$"))
+
+
+#Programmatic SDTM Selection putting a vector
+c("USUBJID", "AETERM", "AEDECOD", "AESTDTC", "AEENDTC")
+
+ae_f <- ae |> select(USUBJID, AETERM, AEDECOD, AESTDTC, AEENDTC)
+typeof(as.vector(ae_f))
+ae_f <- as.vector(ae_f)
+print(ae_f)
+
+#Select Only Domain-Specific Columns
+ae |>  select(contains("AE"))
