@@ -1,0 +1,84 @@
+# Install required packages
+install.packages("nycflights23")
+install.packages("dplyr")
+install.packages("tidyverse")
+
+# Load libraries
+library(nycflights23)
+library(dplyr)
+library(tidyverse)
+
+#Find airports where more than 8% of flights are cancelled
+
+
+F <- flights %>%
+  group_by(carrier) %>%
+  mutate(per = mean(dep_time > 0, na.rm = TRUE)) %>%
+  filter(per > 0.08) %>%
+  select(carrier, dep_time, dep_delay, per)
+F
+View(F)
+
+#Airlines where less than 60% flights are on time
+f <- flights %>%
+  group_by(carrier,arr_delay) %>% mutate(per1=mean(arr_delay < 0, na.rm = TRUE)) %>% 
+  filter(per1 < 0.6) %>% 
+  select(carrier, dep_time, dep_delay, per1)
+f
+view(f)
+ #or
+f <- flights %>%
+  group_by(carrier)  %>% 
+  summarise(per1=mean(arr_delay < 0, na.rm = TRUE)) %>% 
+  filter(per1 < 0.6)
+f
+view(f)
+
+#Example 2 — Airlines with <80% on-time departures
+
+f1 <- flights %>% 
+  group_by(carrier) %>% 
+  mutate(per2=mean(dep_delay < 0, na.rm = TRUE)) %>% 
+  filter(per2 < 0.8) %>% select(dep_time,dep_delay,carrier,per2)
+f1
+View(f1)
+
+#Example 3 — Airports with >10% cancellations
+
+f2 <- flights %>% 
+  group_by(origin) %>% 
+  mutate(per3=mean(dep_time >0, na.rm = TRUE)) %>% 
+  filter(per3 >0.1) %>% select(origin,dep_time,dep_delay,per3)
+f2
+View(f2)
+
+#Routes (origin + dest) where >15% flights are cancelled
+f3 <- flights %>% 
+  group_by(origin,dest) %>% 
+  summarise(cancel_rate = mean(is.na(dep_time), na.rm = TRUE)) %>% 
+  filter( cancel_rate  > 0.15) 
+f3
+View(f3)
+
+# to check 
+flights %>%
+  group_by(origin, dest) %>%
+  summarise(cancel_rate = mean(is.na(dep_time))) %>%
+  arrange(desc(cancel_rate)) %>% 
+  head(19)
+
+#Aircrafts with more than 50 total flights AND >25% delayed
+f4 <- flights %>% 
+  group_by(carrier) %>% 
+  mutate(delayed= mean(dep_delay > 0, na.rm = TRUE)) %>% 
+filter( delayed > 0.25) %>% select(origin,dep_time,dep_delay,delayed)
+f4
+view(f4)
+
+#Days where average arrival delay > 30 min
+f5 <- flights %>% 
+  group_by(year, month, day) %>% 
+  mutate(avg_delay = mean(arr_delay ,na.rm = TRUE)) %>% 
+  filter(avg_delay > 30) %>% select(year, month, day, arr_time, avg_delay, arr_delay)
+f5
+view(f5)
