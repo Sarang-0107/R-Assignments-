@@ -1,0 +1,29 @@
+percentage_by_group <- function(data, group_var, condition_var,
+                                condition, threshold = NULL, keep_rows = FALSE) {
+  
+  # Convert group_var and condition_var to symbols
+  group_sym <- rlang::ensym(group_var)
+  condition_sym <- rlang::ensym(condition_var)
+  
+  # Create the condition expression dynamically
+  condition_expr <- rlang::expr( (!!condition_sym) %>% (!!condition) )
+  
+  # Compute percentage
+  summary_tbl <- data %>%
+    group_by(!!group_sym) %>%
+    summarise(percent = mean( !!condition_expr, na.rm = TRUE ))
+  
+  # Apply threshold filter if provided
+  if(!is.null(threshold)) {
+    summary_tbl <- summary_tbl %>% filter(percent < threshold)
+  }
+  
+  # If user wants flight-level rows:
+  if(keep_rows) {
+    data <- data %>%
+      inner_join(summary_tbl, by = rlang::as_name(group_sym))
+    return(data)
+  }
+  
+  return(summary_tbl)
+}
