@@ -1,0 +1,115 @@
+A semi join keeps only the rows from the first table (x) that have a matching value in the second table (y) based on the join keys.
+semi_join(flights, airlines, by = "carrier")
+This returns only the flights whoose carrier exists in the airlines table.
+
+Anti Join (anti_join)
+An anti join keeps only the rows from the first table (x) that do NOT have a matching value in the second table (y).
+anti_join(flights, airlines, by = "carrier")
+this rertusn flights whoose carrier code is not found in airlines.
+
+
+
+
+library(tibble)
+install.packages("dplyr")
+library(dplyr)
+
+customers <- tibble(
+  customer_id = c(1, 2, 3, 4),
+  name        = c("Alice", "Bob", "Carol", "David"),
+  city        = c("Singapore", "Kuala", "Lumpur", "Jakarta")
+)
+
+customers
+
+
+
+orders <- tibble(
+  order_id    = c(101, 102, 103, 104),
+  customer_id = c(1,   1,   2,   5),
+  product_id  = c("P1", "P2", "P3", "P2"),
+  amount      = c(200, 150, 300, 250),
+  order_date  = as.Date(c("2024-03-01", "2024-03-10",
+                          "2024-02-15", "2024-03-20"))
+)
+
+orders
+
+
+
+
+library(tibble)
+
+products <- tibble(
+  product_id   = c("P1", "P2", "P3", "P4"),
+  product_name = c("Laptop", "Phone", "Chair", "Table"),
+  category     = c("Electronics", "Electronics", "Furniture", "Furniture"),
+  price        = c(2000, 1000, 300, 500)
+)
+
+products
+
+students <- tibble(
+  student_id = c(1, 2, 3, 4),
+  name       = c("John", "Emma", "Liam", "Olivia"),
+  marks      = c(85, 92, 67, 74),
+  age        = c(20, 22, 19, 21)
+)
+
+students
+#1. inner_join()
+#Find customers who have placed orders
+#Match orders with product details, but only where both exist
+
+
+outputs= customers %>% 
+  inner_join(orders,by="customer_id" )
+
+outputs
+
+
+#left_join()
+#Show all customers, including those who never ordered
+#Attach product info to orders, even if some products are missing
+
+never = left_join(customers,orders, by="customer_id")
+never
+
+
+# right_join()
+#Show all products, even those never ordered
+#Keep all entries from products table
+
+all = right_join(orders,products, by="product_id")
+all
+
+
+#4. full_join()
+#Combine customers and orders to see:
+#  customers without orders
+#orders without valid customers
+
+result <- full_join(customers,orders, by= "customer_id")
+result
+
+#5. semi_join()
+#Get customers who made at least one purchase
+#Do NOT include order details
+?semi_join
+semi <- semi_join(customers,orders,by="customer_id")
+semi
+
+
+#6. anti_join()
+#Find:
+ # customers who never ordered
+#orders with invalid customer_id
+
+?anti_join
+
+anti1 <- anti_join(customers,orders,by="customer_id")
+anti1
+
+
+anti2 <- anti_join(orders, customers, by = "customer_id")
+anti2
