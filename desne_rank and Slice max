@@ -1,0 +1,122 @@
+# Top 5 Fastest Delivery Trucks Per City
+#Each city tracks truck delivery times. Find the top 5 fastest trucks per city,
+#including ties.
+
+library(tibble)
+
+transport <- tibble(
+  truck_id = c(
+    "T1","T2","T3","T4","T5","T6","T7","T8",
+    "T1","T2","T3","T4","T5","T6","T7","T8",
+    "T1","T2","T3","T4","T5","T6","T7","T8"
+  ),
+  city = c(
+    rep("New York", 8),
+    rep("Chicago", 8),
+    rep("Los Angeles", 8)
+  ),
+  delivery_id = paste0("D", 1:24),
+  delivery_time_minutes = c(
+    30, 25, 25, 40, 20, 20, 35, 28,
+    50, 45, 45, 60, 55, 40, 40, 42,
+    35, 30, 28, 28, 25, 25, 40, 32
+  )
+)
+transport
+
+transport %>% group_by(city) %>% 
+  mutate(Fastest_truck=dense_rank(delivery_time_minutes)) %>% 
+  filter(Fastest_truck<=5)  
+transport
+
+# So we used dense rank here beacuse they want with ties as well thats why we used it 
+
+#Q2.Top 3 Most Active Customers Per Region
+#Customer activity is measured by orders. 
+#Get the top 3 customers per region, including ties.
+
+sales <- data.frame(
+  customer_id = sample(1001:1050, 100, replace = TRUE),
+  region = sample(c("North", "South", "East", "West"), 100, replace = TRUE),
+  segment = sample(c("Gold", "Silver", "Bronze"), 100, replace = TRUE),
+  orders = sample(1:100, 100, replace = TRUE),
+  ltv = sample(500:5000, 100, replace = TRUE)
+)
+
+b <- sales %>% group_by(region) %>% 
+  mutate(active=dense_rank(orders)) %>% arrange(region,orders) %>% 
+  filter(active <= 3) 
+b
+
+
+#Q3.Top 4 Most Popular Courses Per University
+#Each university has course enrollment counts.
+# Find top 4 enrolled courses per university with ties.
+
+
+library(tibble)
+
+courses <- tibble(
+  university = c(
+    "Harvard", "Harvard", "Harvard", "Harvard", "Harvard", "Harvard",
+    "MIT", "MIT", "MIT", "MIT", "MIT", "MIT",
+    "Stanford", "Stanford", "Stanford", "Stanford", "Stanford", "Stanford"
+  ),
+  course = c(
+    "Math", "CS", "Physics", "Biology", "Economics", "History",
+    "Math", "CS", "Physics", "Biology", "Economics", "History",
+    "Math", "CS", "Physics", "Biology", "Economics", "History"
+  ),
+  enrollment = c(
+    200, 300, 300, 150, 150, 300,   # Harvard (ties at top)
+    400, 350, 350, 200, 150, 350,   # MIT (ties)
+    250, 260, 260, 240, 230, 260    # Stanford (ties)
+  )
+)
+
+c <- courses  %>%  group_by(university) %>% 
+  mutate(top=dense_rank(enrollment)) %>% 
+  filter( top <= 4) %>% arrange(university)
+c
+#or
+d <- courses %>%  group_by(university) %>% 
+  slice_max(enrollment, n=4) %>% arrange(university)
+d
+
+#Q4.Top 2 Longest Downtime Events Per Server Cluster Downtime events per server; 
+#identify top 2 longest per cluster, including ties. 
+
+
+library(tibble)
+
+downtime <- tibble(
+  cluster = c(
+    "A","A","A","A","A","A",
+    "B","B","B","B","B","B",
+    "C","C","C","C","C","C"
+  ),
+  
+  server_id = c(
+    1,2,3,4,5,6,
+    1,2,3,4,5,6,
+    1,2,3,4,5,6
+  ),
+  
+  event_id = 1:18,
+  
+  downtime_minutes = c(
+    120, 200, 200, 150, 100, 200,   # Cluster A (ties at top)
+    300, 250, 250, 200, 180, 250,   # Cluster B (ties)
+    400, 350, 350, 300, 280, 350    # Cluster C (ties)
+  )
+)
+downtime
+
+e <- downtime %>% group_by(cluster) %>% 
+  slice_max(downtime_minutes, n=2) %>% arrange(cluster)
+e
+ #or
+e <- downtime %>%  group_by(cluster) %>%
+  mutate(top_2=dense_rank(desc(downtime_minutes))) %>% 
+  filter(top_2 <= 2)
+e
