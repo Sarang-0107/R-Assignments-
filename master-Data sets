@@ -1,0 +1,127 @@
+set.seed(123)
+
+master_data <- data.frame(
+  id = 1:1000,
+  
+  # Common grouping dimensions
+  city = sample(c("Chennai", "Mumbai", "Delhi", "Bangalore"), 1000, replace = TRUE),
+  region = sample(c("North", "South", "East", "West"), 1000, replace = TRUE),
+  country = sample(c("India", "USA", "UK"), 1000, replace = TRUE),
+  
+  # Entities
+  customer_id = sample(100:200, 1000, replace = TRUE),
+  product_id = sample(200:300, 1000, replace = TRUE),
+  brand = sample(c("Nike", "Adidas", "Puma"), 1000, replace = TRUE),
+  university = sample(c("IIT", "MIT", "Stanford"), 1000, replace = TRUE),
+  department = sample(c("HR", "IT", "Finance"), 1000, replace = TRUE),
+  team = sample(c("A", "B", "C"), 1000, replace = TRUE),
+  
+  # Metrics
+  revenue = runif(1000, 100, 10000),
+  rating = runif(1000, 1, 5),
+  orders = sample(1:50, 1000, replace = TRUE),
+  delivery_time = runif(1000, 10, 100),
+  downtime = runif(1000, 1, 50),
+  profit = runif(1000, -5000, 20000),
+  score = runif(1000, 0, 100),
+  quantity = sample(1:500, 1000, replace = TRUE),
+  
+  # Time-based fields
+  date = sample(seq.Date(as.Date("2023-01-01"), as.Date("2025-01-01"), by="day"), 1000, replace = TRUE),
+  quarter = sample(c("Q1","Q2","Q3","Q4"), 1000, replace = TRUE),
+  
+  # Special fields for advanced cases
+  congestion = runif(1000, 0, 100),
+  treatment_time = runif(1000, 5, 120),
+  return_rate = runif(1000, 0, 1),
+  api_usage = sample(1:10000, 1000, replace = TRUE),
+  complaints = sample(1:500, 1000, replace = TRUE)
+)
+master_data
+
+
+master_df <- data.frame(
+  Subject_ID = c("SUBJ001","SUBJ001","SUBJ001","SUBJ002","SUBJ002","SUBJ002",
+                 "SUBJ003","SUBJ003","SUBJ003","SUBJ004","SUBJ004","SUBJ004"),
+  Site_ID = c("SITE01","SITE01","SITE01","SITE01","SITE01","SITE01",
+              "SITE02","SITE02","SITE02","SITE02","SITE02","SITE02"),
+  Age = c(45,45,45,52,52,52,60,60,60,39,39,39),
+  Sex = c("M","M","M","F","F","F","M","M","M","F","F","F"),
+  Weight_kg = c(78,78,78,65,65,65,82,82,82,55,55,55),
+  Height_cm = c(172,172,172,160,160,160,175,175,175,158,158,158),
+  Treatment_Group = c("DrugA","DrugA","DrugA","Placebo","Placebo","Placebo",
+                      "DrugA","DrugA","DrugA","DrugB","DrugB","DrugB"),
+  Dose_mg = c(50,50,50,0,0,0,50,50,50,100,100,100),
+  Visit = c("Screening","Baseline","Week1","Screening","Baseline","Week1",
+            "Screening","Baseline","Week1","Screening","Baseline","Week1"),
+  Visit_Day = c(-7,1,7,-7,1,7,-7,1,7,-7,1,7),
+  Systolic_BP = c(130,128,135,140,138,142,150,148,155,120,118,122),
+  Diastolic_BP = c(85,82,88,90,88,92,95,92,98,80,78,82),
+  Heart_Rate = c(72,70,75,80,78,82,85,83,88,68,66,70),
+  Lab_Hb = c(13.5,13.6,13.2,12.8,12.7,12.5,14.0,13.8,13.5,12.9,13.0,12.7),
+  Lab_WBC = c(6.2,6.0,6.5,7.1,7.0,7.3,8.0,7.8,8.2,5.5,5.4,5.6),
+  Adverse_Event = c(NA,NA,"Headache",NA,NA,"Nausea",NA,NA,"Dizziness",NA,NA,"Fatigue"),
+  AE_Severity = c(NA,NA,"Mild",NA,NA,"Moderate",NA,NA,"Severe",NA,NA,"Mild"),
+  AE_Relationship = c(NA,NA,"Related",NA,NA,"Possibly Related",NA,NA,"Related",NA,NA,"Unrelated"),
+  stringsAsFactors = FALSE
+)
+master_df
+
+
+#DM
+dm <- data.frame(
+  STUDYID = "STUDY01",
+  DOMAIN = "DM",
+  USUBJID = c("STUDY01-SUBJ001","STUDY01-SUBJ002","STUDY01-SUBJ003","STUDY01-SUBJ004"),
+  SUBJID = c("SUBJ001","SUBJ002","SUBJ003","SUBJ004"),
+  SITEID = c("SITE01","SITE01","SITE02","SITE02"),
+  AGE = c(45,52,60,39),
+  SEX = c("M","F","M","F"),
+  ARM = c("DrugA","Placebo","DrugA","DrugB"),
+  ARMCD = c("A","P","A","B"),
+  stringsAsFactors = FALSE
+)
+
+#AE
+
+ae <- data.frame(
+  STUDYID = "STUDY01",
+  DOMAIN = "AE",
+  USUBJID = c("STUDY01-SUBJ001","STUDY01-SUBJ002","STUDY01-SUBJ003","STUDY01-SUBJ004"),
+  AESEQ = c(1,1,1,1),
+  AETERM = c("Headache","Nausea","Dizziness","Fatigue"),
+  AESEV = c("MILD","MODERATE","SEVERE","MILD"),
+  AEREL = c("RELATED","POSSIBLY RELATED","RELATED","UNRELATED"),
+  AESTDTC = c("2025-01-07","2025-01-07","2025-01-07","2025-01-07"),
+  AEENDTC = c("2025-01-08","2025-01-09","2025-01-10","2025-01-08"),
+  stringsAsFactors = FALSE
+)
+
+#VS
+vs <- data.frame(
+  STUDYID = "STUDY01",
+  DOMAIN = "VS",
+  USUBJID = c("STUDY01-SUBJ001","STUDY01-SUBJ001","STUDY01-SUBJ002"),
+  VSTESTCD = c("SYSBP","DIABP","SYSBP"),
+  VSTEST = c("Systolic BP","Diastolic BP","Systolic BP"),
+  VSORRES = c(135,88,142),
+  VSORRESU = c("mmHg","mmHg","mmHg"),
+  VISIT = c("Week1","Week1","Week1"),
+  VISITNUM = c(3,3,3),
+  stringsAsFactors = FALSE
+)
+
+
+# BMI derivation
+master_df$BMI <- master_df$Weight_kg / (master_df$Height_cm/100)^2
+
+# Baseline filtering
+baseline <- subset(master_df, Visit == "Baseline")
+
+# Change from baseline (example for SBP)
+library(dplyr)
+
+chg_df <- master_df %>%
+  group_by(Subject_ID) %>%
+  mutate(Baseline_SBP = Systolic_BP[Visit == "Baseline"][1],
+         CHG_SBP = Systolic_BP - Baseline_SBP)
