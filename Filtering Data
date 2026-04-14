@@ -1,0 +1,263 @@
+install.packages("readxl")
+Sys.setenv(http_proxy="http://your.proxy:port")
+Sys.setenv(https_proxy="http://your.proxy:port")
+chooseCRANmirror()
+options(repos = c(CRAN = "https://cloud.r-project.org"))
+install.packages("dplyr", repos = "https://cloud.r-project.org")
+install.packages("curl")
+
+library(readxl)
+AE<-read_csv("C:/Users/GujarathiS/OneDrive - ICON CLINICAL RESEARCH LTD - IRELAND/Desktop/SDTM/ae.csv")
+
+install.packages("readr")
+library(readr)
+ae <- read_csv("C:/Users/GujarathiS/OneDrive - ICON CLINICAL RESEARCH LTD - IRELAND/Desktop/SDTM/ae.csv")
+dm <- read_csv("C:/Users/GujarathiS/OneDrive - ICON CLINICAL RESEARCH LTD - IRELAND/Desktop/SDTM/dm.csv")
+vs <- read_csv("C:/Users/GujarathiS/OneDrive - ICON CLINICAL RESEARCH LTD - IRELAND/Desktop/SDTM/vs.csv")
+ex <- read_csv("C:/Users/GujarathiS/OneDrive - ICON CLINICAL RESEARCH LTD - IRELAND/Desktop/SDTM/ex.csv")
+lb <- read_csv("C:/Users/GujarathiS/OneDrive - ICON CLINICAL RESEARCH LTD - IRELAND/Desktop/SDTM/lb.csv")
+
+Sys.unsetenv("http_proxy")
+Sys.unsetenv("https_proxy")
+
+library(readr)
+
+AE1 <- read_csv("https://raw.githubusercontent.com/ganeshbabuNN/datasets/refs/heads/master/clinical_datasets/sdtm/daibetes/csv/ae.csv")
+View(AE1)
+AE <- read_csv("https://raw.githubusercontent.com/ganeshbabuNN/datasets/refs/heads/master/clinical_datasets/sdtm/daibetes/csv/ae.csv")
+DM <- read_csv("https://raw.githubusercontent.com/ganeshbabuNN/datasets/refs/heads/master/clinical_datasets/sdtm/daibetes/csv/dm.csv")
+VS <- read_csv("https://raw.githubusercontent.com/ganeshbabuNN/datasets/refs/heads/master/clinical_datasets/sdtm/daibetes/csv/vs.csv")
+EX <- read_csv("https://raw.githubusercontent.com/ganeshbabuNN/datasets/refs/heads/master/clinical_datasets/sdtm/daibetes/csv/ex.csv")
+LB <- read_csv("https://raw.githubusercontent.com/ganeshbabuNN/datasets/refs/heads/master/clinical_datasets/sdtm/daibetes/csv/lb.csv")
+View(DM)
+View(EX)
+library(dplyr)
+
+#DM (Demographics) – Filtering Assignments
+#-----------------------------------------
+#1.Filter male subjects only. 
+#2.Filter subjects older than 65 years.
+#3.Filter subjects belonging to STUDYID "ABC123".
+#4 Filter subjects randomized to Treatment Arm A.
+#5 Filter subjects from USA and Canada only. Use %in%.
+
+#1.Filter male subjects only.
+dm %>% 
+  filter(SEX =="M")
+
+#2.Filter subjects older than 65 years.
+
+dm %>% 
+  filter(AGE > 65)
+
+#3.Filter subjects belonging to STUDYID "ABC123".
+
+DM %>%
+  filter(STUDYID == "ABC123")
+
+#4 Filter subjects randomized to Treatment Arm A.
+
+DM %>% 
+  filter(COUNTRY %in% c("UA","CD"))
+
+
+#AE (Adverse Events)
+#------------------
+#6 Filter serious adverse events.
+#7 Filter severe adverse events.
+#8 Filter treatment related adverse events.
+#9 Filter AEs that started after first dose date.
+#10 Filter AEs ongoing at end of study.
+#11 Filter AEs occurring in first 30 days after treatment.
+#12 Filter subjects having more than 3 adverse events. Use group_by() + filter(n() > 3).
+
+View(AE1)
+#6 Filter serious adverse events.
+AE1 %>% 
+  filter(AESER =="Y")
+
+#7 Filter severe adverse events.
+
+AE1 %>% 
+  filter(AESEV == "SEVERE")
+
+#8 Filter treatment related adverse events.
+
+library(dplyr)
+library(tidyverse)
+library(lubridate)
+
+
+ex1<- EX %>% 
+  mutate(EXSTDTC = as.Date(EXSTDTC)) %>% 
+  group_by(USUBJID) %>% 
+  summarise(first_dose = min(EXSTDTC))
+
+first_date <- AE1 %>% 
+  mutate(AESTDTC = as.Date(AESTDTC)) %>% 
+  left_join(ex1, by = "USUBJID") %>% 
+  filter (AESTDTC > first_dose)
+
+first_date
+View(first_date)
+
+#10 Filter AEs ongoing at end of study.
+
+Ongoing <- AE1 %>% 
+  filter(is.na (AEENDTC))
+Ongoing  
+View(Ongoing)
+
+#11 Filter AEs occurring in first 30 days after treatment.
+
+AE1 %>% 
+  filter(AESTDY <= 30)
+
+#12 Filter subjects having more than 3 adverse events. Use group_by() + filter(n() > 3).
+count <- AE1 %>% 
+  group_by(USUBJID
+           ) %>% 
+  filter(n() > 3)
+count
+View(count)
+
+
+#VS (Vital Signs)
+#---------------
+#13 Filter high systolic blood pressure (>140).
+#14 Filter low heart rate (<50 bpm).
+#15 Filter vital signs collected during screening visit.
+#16 Filter abnormal vital signs results.
+#17 Filter subjects with increasing blood pressure compared to previous visit. Use lag().
+#18 Filter subjects who received study drug.
+#19Filter missed doses.
+#20 Filter exposures before adverse event start date.
+#21 Filter subjects who received more than 10 doses. Use group_by(USUBJID).
+#22 Filter highest dose per subject. Use max(EXDOSE).
+
+View(VS)
+#13 Filter high systolic blood pressure (>140).
+SBP <- VS %>% 
+  filter(VSTEST == "Systolic Blood Pressure" & VSSTRESN > 140)
+SBP
+View(SBP)
+
+
+#14 Filter low heart rate (<60 bpm).
+HR <- VS %>% 
+  filter(VSTEST == "Heart Rate" & VSSTRESN < 60)
+HR
+View(HR)
+
+
+#15 Filter vital signs collected during screening visit.
+SCR <- VS %>% 
+  filter( VISIT == "SCREENING")
+SCR
+View(SCR)
+
+VS %>% 
+  select(VSTEST) %>%  distinct()
+#16 FilteVSTEST#16 Filter abnormal vital signs results.
+abnormal <- VS %>% 
+  mutate(
+    VSCLSIG = case_when(
+      VSTEST == "Systolic Blood Pressure" & VSSTRESN > 140 ~ "Y",
+      VSTEST == "Diastolic Blood Pressure" & VSSTRESN > 90 ~ "Y",
+      VSTEST == "Temperature" & (VSSTRESN > 38 | VSSTRESN < 36) ~ "Y",
+      VSTEST == "Heart Rate" & (VSSTRESN < 60 | VSSTRESN > 100) ~ "Y",
+      TRUE ~ "N"
+    )
+  ) %>% 
+  filter(VSCLSIG == "Y")
+abnormal
+view(abnormal)
+
+#17 Filter subjects with increasing blood pressure compared to previous visit. Use lag().
+
+Vital <- VS %>% 
+  filter(VSTEST == "Systolic Blood Pressure") %>% 
+  arrange(USUBJID,VISITNUM ) %>% 
+  group_by(USUBJID) %>% 
+  mutate(
+    prev_SBP = lag(VSSTRESN),
+    inc_SVP = if_else(VSSTRESN  > prev_SBP , "Y", "N")
+  ) %>% 
+  filter(inc_SVP == "Y")
+Vital
+view(Vital)
+
+#18 Filter subjects who received study drug.
+View(EX)
+EX %>% 
+  filter(EXTRT == "STUDY DRUG") %>% 
+  distinct(USUBJID)
+
+#19Filter missed doses.
+EX %>% 
+  filter(is.na(EXTRT))
+
+#20 Filter exposures before adverse event start date.
+#TBD
+ae_clean <- AE1  %>% 
+  mutate(AESTDTC = as.Date(AESTDTC ,format = "%m/%d/%Y")) %>% 
+  group_by(USUBJID, AESTDTC)
+ae_clean
+view(ae_clean)
+ex_clean <- EX %>% 
+  mutate(EXSTDTC=as.Date(EXSTDTC,format = "%m/%d/%Y"))  %>% 
+  group_by(USUBJID, EXSTDTC)
+  ex_clean
+View(ex_clean)
+
+ae_ex <- ae_clean %>% 
+  left_join(ex_clean, by= "USUBJID") %>% 
+  filter(AESTDTC > EXSTDTC) 
+
+#21 Filter subjects who received more than 10 doses. Use group_by(USUBJID).
+
+Doses <- EX %>% 
+  group_by(USUBJID) %>% 
+  filter(n() > 10 ) %>% 
+  ungroup()
+Doses
+View(Doses)
+
+#22 Filter highest dose per subject. Use max(EXDOSE).
+
+EX %>% 
+  group_by(USUBJID) %>% 
+  filter(EXDOSE == max(EXDOSE, na.rm = TRUE)) %>% 
+  ungroup()
+
+#LB (Laboratory)
+#---------------
+#23 Filter abnormal lab results.
+#24 Filter ALT values greater than 3× upper normal limit.
+#25 Filter lab tests collected after treatment start.
+#26 Filter highest lab value per subject. Use slice_max().
+#27 Filter lab values missing results.
+library(dplyr)
+#23 Filter abnormal lab results.
+View(lb)
+lb %>% 
+  filter(LBNRIND == "HIGH")
+  
+#24 Filter ALT values greater than 3× upper normal limit.
+lb %>% 
+  filter(LBCAT == "Alanine Aminotransferase" & LBSTRESN > 95)
+
+#25 Filter lab tests collected after treatment start.
+# so for this questions i have to join ex data set and then check ? -- Need to ask 
+
+#26 Filter highest lab value per subject. Use slice_max().
+
+hig <- lb %>% 
+  group_by(USUBJID) %>% 
+  slice_max(order_by =LBSTRESN, n=1 )
+hig
+View(hig)
+
+#27 Filter lab values missing results.
+lb %>% 
+  filter(is.na(LBSTRESN))
