@@ -16,6 +16,9 @@ dm <- read_csv("C:/Users/GujarathiS/OneDrive - ICON CLINICAL RESEARCH LTD - IREL
 vs <- read_csv("C:/Users/GujarathiS/OneDrive - ICON CLINICAL RESEARCH LTD - IRELAND/Desktop/SDTM/vs.csv")
 ex <- read_csv("C:/Users/GujarathiS/OneDrive - ICON CLINICAL RESEARCH LTD - IRELAND/Desktop/SDTM/ex.csv")
 lb <- read_csv("C:/Users/GujarathiS/OneDrive - ICON CLINICAL RESEARCH LTD - IRELAND/Desktop/SDTM/lb.csv")
+cm <-  read_csv("C:/Users/GujarathiS/OneDrive - ICON CLINICAL RESEARCH LTD - IRELAND/Desktop/SDTM/cm.csv")
+sv <-  read_csv("C:/Users/GujarathiS/OneDrive - ICON CLINICAL RESEARCH LTD - IRELAND/Desktop/SDTM/sv.csv")
+ds <-  read_csv("C:/Users/GujarathiS/OneDrive - ICON CLINICAL RESEARCH LTD - IRELAND/Desktop/SDTM/ds.csv")
 
 Sys.unsetenv("http_proxy")
 Sys.unsetenv("https_proxy")
@@ -261,3 +264,82 @@ View(hig)
 #27 Filter lab values missing results.
 lb %>% 
   filter(is.na(LBSTRESN))
+
+#CM (Concomitant Medication)
+#---------------------------
+View(cm)
+#28 Filter medications related to hypertension.
+#29 Filter medications started before study drug.
+#30 Filter ongoing medications.
+#31 Filter subjects taking more than 5 medications. Use group_by(USUBJID).
+
+#28 Filter medications related to hypertension.
+
+cm %>% 
+  filter(CMINDC == "HYPERTENSION")
+  filter
+  
+#29 Filter medications started before study drug.
+
+#30 Filter ongoing medications.
+cm %>% 
+  filter(is.na(CMENDTC))
+
+#31 Filter subjects taking more than 5 medications. Use group_by(USUBJID).
+five <- cm %>% 
+  group_by(USUBJID) %>% 
+  filter(n() > 5)
+five
+View(five)
+
+#SV (Subject Visits)
+#-------------------
+#32 Filter screening visits only.
+#33 Filter unscheduled visits.
+#34 Filter visits occurring after Day 30.
+#35 Filter subjects who missed visits.
+#36 Filter subjects who discontinued study.
+#37 Filter subjects who completed study.
+#38 Filter discontinuation due to adverse event.
+#39 Filter subjects withdrawn due to lack of efficacy.
+#40 Filter subjects discontinued within first 60 days. Use between() or date calculation.
+
+View(sv)
+#32 Filter screening visits only.
+sv %>% 
+  filter(VISIT == "SCREENING")
+
+#33 Filter unscheduled visits.
+sv %>% 
+  filter(VISIT == "unscheduled")
+
+#34 Filter visits occurring after Day 30.
+
+sv %>% 
+  filter(SVSTDY > 30)
+
+#35 Filter subjects who missed visits.
+sv %>% 
+  filter(is.na(VISIT) | is.na(VISITNUM) | is.na(SVSTDY))
+
+#36 Filter subjects who discontinued study.
+View(ds)
+ds %>% 
+  filter(DSDECOD == "STUDY DISCONTINUED")
+
+#37 Filter subjects who completed study.
+ds %>% 
+  filter(DSDECOD == "TREATMENT COMPLETED")
+  
+#38 Filter discontinuation due to adverse event.
+ ds %>% 
+   filter(DSREASCD == "ADVERSE EVENT")
+ 
+ #39 Filter subjects withdrawn due to lack of efficacy.
+ ds %>% 
+   filter(DSREASCD == "LACK OF EFFICACY")
+ 
+ #40 Filter subjects discontinued within first 60 days. Use between() or date calculation.
+ ds %>% 
+   filter(DSDECOD == "STUDY DISCONTINUED" & between(DSSTDY,1,60))
+ 
