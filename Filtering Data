@@ -1,10 +1,4 @@
-install.packages("readxl")
-Sys.setenv(http_proxy="http://your.proxy:port")
-Sys.setenv(https_proxy="http://your.proxy:port")
-chooseCRANmirror()
-options(repos = c(CRAN = "https://cloud.r-project.org"))
-install.packages("dplyr", repos = "https://cloud.r-project.org")
-install.packages("curl")
+
 
 library(readxl)
 AE<-read_csv("C:/Users/GujarathiS/OneDrive - ICON CLINICAL RESEARCH LTD - IRELAND/Desktop/SDTM/ae.csv")
