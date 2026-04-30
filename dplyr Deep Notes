@@ -1,0 +1,478 @@
+📘 **dplyr Deep Notes (Concept + Exam Mastery)**
+
+🔹 **Core Idea of dplyr**
+dplyr is built on the idea of **data transformation using verbs**. Each function performs one clear task, and you combine them using `%>%` (pipe). Data flows step-by-step.
+
+---
+
+🔹 **Data Flow Model (VERY IMPORTANT)**
+👉 Input → Transform → Output
+
+Example flow:
+data → filter rows → group → summarise → arrange → result
+
+👉 Always think in steps, not in one line.
+
+---
+
+🔹 **Row vs Column Thinking**
+
+* **Row operations** → `filter()`, `slice()`
+* **Column operations** → `select()`, `mutate()`
+
+👉 Common mistake: mixing row logic inside column functions.
+
+---
+
+🔹 **Grouping Concept (MOST IMPORTANT TOPIC)**
+
+`group_by()` changes how all next functions behave.
+
+Without grouping:
+
+```r
+mean(x)
+```
+
+With grouping:
+
+```r
+group_by(group) %>%
+summarise(mean(x))
+```
+
+👉 Now calculation is done **per group**, not whole dataset.
+
+⚠️ Grouping stays active until `ungroup()`.
+
+---
+
+🔹 **summarise() reduces data**
+
+* Always returns **fewer rows**
+* Usually **1 row per group**
+
+👉 Key rule:
+
+> summarise = collapse data
+
+---
+
+🔹 **mutate() keeps data size same**
+
+* Adds or changes columns
+* Does NOT reduce rows
+
+👉 Key rule:
+
+> mutate = same rows, new columns
+
+---
+
+🔹 **arrange() and desc()**
+
+* `arrange(x)` → ascending
+* `arrange(desc(x))` → descending
+
+⚠️ `desc()` only works correctly inside sorting or ranking context
+❌ Not for direct use in `mutate()`
+
+---
+
+🔹 **Ranking Logic (EXAM FAVORITE)**
+
+To rank highest first:
+
+```r
+mutate(rank = min_rank(desc(x)))
+```
+
+Why?
+
+* `desc(x)` flips order
+* `min_rank()` assigns ranks
+
+Types:
+
+* `min_rank()` → gaps in ranks
+* `dense_rank()` → no gaps
+* `row_number()` → unique ranks
+
+---
+
+🔹 **filter() Logic**
+
+* Keeps rows where condition is TRUE
+* Drops FALSE and NA
+
+Multiple conditions:
+
+```r
+filter(x > 10, y < 20)
+```
+
+👉 comma = AND
+
+---
+
+🔹 **Handling Missing Values**
+
+Important in exams:
+
+```r
+mean(x, na.rm = TRUE)
+```
+
+👉 Without this → result becomes NA
+
+---
+
+🔹 **Joins Concept (RELATIONAL THINKING)**
+
+* `left_join(x, y)` → keep all rows from x
+* `inner_join(x, y)` → only matching rows
+
+👉 Based on keys (common columns)
+
+---
+
+🔹 **Window Functions (ADVANCED)**
+
+Used inside `mutate()` with groups:
+
+* `lag()` → previous value
+* `lead()` → next value
+* `cumsum()` → cumulative sum
+
+👉 Works **row-wise but aware of groups**
+
+---
+
+🔹 **.by (Modern dplyr)**
+
+Shortcut for grouping:
+
+```r
+summarise(df, mean = mean(x), .by = group)
+```
+
+👉 No need for `group_by()`
+
+---
+
+🔹 **across() (MULTI-COLUMN OPERATIONS)**
+
+```r
+mutate(across(where(is.numeric), mean))
+```
+
+👉 Apply function to many columns
+
+---
+
+🔹 **Execution Order (VERY IMPORTANT)**
+
+```r
+df %>%
+  group_by(g) %>%
+  summarise(x = mean(x)) %>%
+  arrange(desc(x))
+```
+
+Order:
+
+1. Group
+2. Summarise
+3. Sort
+
+👉 Changing order = different result
+
+---
+
+🔹 **Common Exam Mistakes**
+
+❌ Using `desc()` inside `mutate()` alone
+❌ Ranking before summarising
+❌ Forgetting `na.rm = TRUE`
+❌ Using `=` instead of `==`
+❌ Not understanding grouping effect
+
+---
+
+🔹 **Golden Strategy for Questions**
+
+1. What is asked? (filter / average / rank?)
+2. Do I need grouping?
+3. Do I need summarising?
+4. Do I need sorting or ranking?
+
+👉 Then write code step-by-step.
+
+---
+
+🎯 **Ultimate Memory Line**
+
+> dplyr = filter rows → select columns → mutate data → group → summarise → arrange
+
+---
+
+
+***************************************************************************************************************************************************
+📘 Main Functions in dplyr
+🔹 1. Row operations
+✅ filter()
+
+Keep rows based on condition
+
+filter(df, x > 10)
+✅ slice() family
+
+Pick rows by position
+
+slice()
+slice_head()
+slice_tail()
+slice_max()
+slice_min()
+slice_sample()
+🔹 2. Column operations
+✅ select()
+
+Choose columns
+
+select(df, name, age)
+✅ rename()
+
+Rename columns
+
+rename(df, new_name = old_name)
+✅ relocate()
+
+Move columns
+
+🔹 3. Create / modify columns
+✅ mutate()
+
+Create or change columns
+
+mutate(df, new = x + y)
+✅ transmute()
+
+Create new columns (drops old ones)
+
+🔹 4. Summarising data
+✅ summarise() (or summarize())
+
+Reduce data to one value
+
+summarise(df, avg = mean(x))
+🔹 5. Grouping
+✅ group_by()
+
+Group data
+
+group_by(df, category)
+✅ ungroup()
+
+Remove grouping
+
+🔹 6. Arrange (sorting)
+✅ arrange()
+
+Sort rows
+
+arrange(df, x)
+arrange(df, desc(x))
+🔹 7. Joins (combine datasets)
+inner_join()
+left_join()
+right_join()
+full_join()
+left_join(df1, df2, by = "id")
+🔹 8. Pipes
+✅ %>% (from tidyverse)
+
+Pass result forward
+
+df %>%
+  filter(x > 10) %>%
+  select(y)
+🔹 Important Helper Functions
+n() → count rows
+n_distinct() → unique count
+across() → apply to multiple columns
+if_else() → conditional logic
+case_when() → multiple conditions
+🔹 Important Arguments (Parameters)
+Common across functions:
+✅ .data
+
+Dataset (first argument)
+
+✅ .by (new feature)
+
+Group without group_by()
+
+summarise(df, avg = mean(x), .by = group)
+✅ .groups
+
+Controls grouping after summarise()
+
+✅ .preserve
+
+Used in filter()
+
+✅ na.rm = TRUE
+
+Ignore missing values
+
+🔹 Special selection helpers (inside select())
+starts_with()
+ends_with()
+contains()
+matches()
+everything()
+🔹 Ranking functions
+min_rank()
+dense_rank()
+row_number()
+🔹 Window functions
+lag()
+lead()
+cumsum()
+cummean()
+🧠 Simple structure to remember
+
+Rows → filter, slice
+Columns → select, mutate
+Groups → group_by, summarise
+Order → arrange
+Combine → join
+
+🎯 One-line summary
+
+dplyr is for filtering, selecting, transforming, grouping, summarising, and joining data
+************************************************************************************
+📘 **dplyr Cheat Sheet (Quick Revision)**
+
+In dplyr, data manipulation is done using a small set of powerful functions.
+
+🔹 **Row operations**
+Use `filter()` to keep rows based on conditions (e.g., `x > 10`).
+Use `slice()` and its variants like `slice_head()`, `slice_tail()`, `slice_max()`, `slice_min()` to pick rows by position or value.
+
+🔹 **Column operations**
+Use `select()` to choose columns and `rename()` to rename them.
+Use `relocate()` to move columns.
+
+🔹 **Create / modify columns**
+Use `mutate()` to add or change columns.
+Use `transmute()` to create new columns and drop old ones.
+
+🔹 **Grouping and summarising**
+Use `group_by()` to group data.
+Use `summarise()` to calculate summaries like mean, sum, count.
+Example: `summarise(avg = mean(x, na.rm = TRUE))`
+
+🔹 **Sorting**
+Use `arrange()` to sort data.
+Use `desc(x)` inside it for descending order.
+
+🔹 **Joins (combine datasets)**
+`inner_join()`, `left_join()`, `right_join()`, `full_join()` to merge datasets using a key.
+
+🔹 **Useful helpers**
+`n()` = count rows
+`n_distinct()` = unique values
+`across()` = apply function to many columns
+`case_when()` = multiple conditions
+`if_else()` = simple condition
+
+🔹 **Ranking functions**
+`min_rank()`, `dense_rank()`, `row_number()` for ranking data.
+
+🔹 **Window functions**
+`lag()` and `lead()` for previous/next values
+`cumsum()`, `cummean()` for cumulative calculations
+
+🔹 **Important arguments**
+`.by` = group without `group_by()`
+`na.rm = TRUE` = ignore missing values
+`.groups` = control grouping after summarise
+
+🔹 **Pipe operator**
+`%>%` passes output to next step for clean code.
+
+🧠 **Memory Trick**
+Rows → filter
+Columns → select/mutate
+Groups → group_by + summarise
+Order → arrange
+Combine → join
+
+🎯 **One-line summary**
+dplyr helps you filter, select, transform, group, summarise, and join data easily.
+
+
+****************************************************************************************************************************
+📘 **dplyr Exam-Focused Short Notes**
+
+In dplyr, the most important idea is: manipulate data using simple verbs.
+
+🔹 **Core functions (must remember)**
+`filter()` → keep rows (condition must be TRUE)
+`select()` → choose columns
+`mutate()` → create/modify columns
+`summarise()` → reduce data (mean, sum, etc.)
+`group_by()` → group data
+`arrange()` → sort data (`desc()` for descending)
+
+🔹 **Very common pattern (EXAM IMPORTANT)**
+👉 `group_by()` + `summarise()`
+Used for averages, totals, counts
+Example: average per group
+
+🔹 **Top / Bottom values**
+Use `slice_max()` / `slice_min()`
+OR `arrange(desc(x))`
+
+🔹 **Ranking (IMPORTANT DIFFERENCE)**
+`min_rank()` → ties, gaps
+`dense_rank()` → ties, no gaps
+`row_number()` → no ties
+
+👉 Use: `min_rank(desc(x))` for highest = rank 1
+
+🔹 **Conditions in filter()**
+`>`, `<`, `==`, `!=`
+`&` (AND), `|` (OR)
+`%in%` (multiple values)
+`is.na()` (missing values)
+
+🔹 **Handling missing values**
+Always use: `na.rm = TRUE` in `mean()`, `sum()`
+
+🔹 **Pipes (VERY IMPORTANT)**
+`%>%` → passes result forward
+Makes code readable step-by-step
+
+🔹 **Joins (basic idea)**
+`left_join(x, y)` → keep all rows from x
+`inner_join(x, y)` → keep matching rows only
+
+🔹 **New shortcut**
+`.by` → grouping without `group_by()`
+
+🔹 **Common mistakes (EXAM TRAPS)**
+❌ `=` instead of `==` in filter
+❌ forgetting `na.rm = TRUE`
+❌ using `desc()` inside `mutate()` alone
+❌ ranking before summarising
+
+🔹 **Golden Rule**
+👉 First `group_by()` → then `summarise()` → then `arrange()` or `rank`
+
+🎯 **One-line memory**
+Filter rows, select columns, mutate new data, group and summarise, then arrange.
+
+************************************************************************************
