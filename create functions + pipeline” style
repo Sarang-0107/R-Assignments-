@@ -1,0 +1,1058 @@
+Quiz Set 1 (1–25)
+1.
+Create a function for the below query:
+flight_pipeline <- function(data) {
+  data %>%
+    mutate(
+      gain = gain_calc(dep_delay, arr_delay),
+      status = status_flag(arr_delay)
+    ) %>%
+    group_by(origin) %>%
+    summarise(
+      avg_gain = safe_mean(gain)
+    )
+}
+Functions:
+•	gain_calc → dep_delay - arr_delay 
+•	status_flag → if arr_delay > 0 "late" else "on_time" 
+•	safe_mean → NA if all missing else mean 
+________________________________________
+2.
+sales_pipeline <- function(data) {
+  data %>%
+    mutate(
+      revenue = revenue_calc(price, quantity),
+      high_sale = high_flag(revenue)
+    ) %>%
+    group_by(region) %>%
+    summarise(
+      avg_revenue = safe_mean(revenue)
+    )
+}
+Functions:
+•	revenue_calc → price * quantity 
+•	high_flag → revenue > 1000 
+•	safe_mean → same rule 
+________________________________________
+3.
+student_pipeline <- function(data) {
+  data %>%
+    mutate(
+      total = total_marks(math, science, english),
+      pass = pass_flag(total)
+    ) %>%
+    group_by(class) %>%
+    summarise(
+      avg_total = safe_mean(total)
+    )
+}
+Functions:
+•	total_marks → sum of 3 
+•	pass_flag → total ≥ 120 
+________________________________________
+4.
+order_pipeline <- function(data) {
+  data %>%
+    mutate(
+      discount = discount_calc(price),
+      final = final_price(price, discount)
+    ) %>%
+    group_by(category) %>%
+    summarise(
+      avg_final = safe_mean(final)
+    )
+}
+Functions:
+•	discount_calc → 10% of price if price > 500 else 0 
+•	final_price → price - discount 
+________________________________________
+5.
+employee_pipeline <- function(data) {
+  data %>%
+    mutate(
+      bonus = bonus_calc(salary),
+      high_paid = high_flag(salary)
+    ) %>%
+    group_by(department) %>%
+    summarise(
+      avg_salary = safe_mean(salary)
+    )
+}
+Functions:
+•	bonus_calc → 5% salary 
+•	high_flag → salary > 80000 
+________________________________________
+6.
+speed_calc → distance / time
+fast_flag → speed > 60
+________________________________________
+7.
+profit_calc → revenue - cost
+loss_flag → profit < 0
+________________________________________
+8.
+bmi_calc → weight / height²
+obese_flag → bmi > 30
+________________________________________
+9.
+tax_calc → income * 0.2
+high_tax → tax > 50000
+________________________________________
+10.
+age_group → age > 18 "adult" else "minor"
+safe_mean same
+________________________________________
+11.
+temp_convert → (C * 9/5) + 32
+hot_flag → temp > 30
+________________________________________
+12.
+distance_km → meters / 1000
+long_trip → km > 100
+________________________________________
+13.
+rating_flag → rating ≥ 4
+safe_mean
+________________________________________
+14.
+loan_interest → amount * rate
+high_loan → amount > 100000
+________________________________________
+15.
+attendance_pct → present / total * 100
+low_attendance → < 75
+________________________________________
+16.
+score_diff → score1 - score2
+winner_flag → diff > 0
+________________________________________
+17.
+conversion_rate → clicks / views
+high_conversion → > 0.1
+________________________________________
+18.
+fuel_eff → distance / fuel
+inefficient → < 15
+________________________________________
+19.
+growth → (new - old)/old
+negative_growth → < 0
+________________________________________
+20.
+discount_flag → discount > 20
+safe_mean
+________________________________________
+21.
+salary_monthly → annual / 12
+high_income → > 50000
+________________________________________
+22.
+profit_margin → profit / revenue
+low_margin → < 0.1
+________________________________________
+23.
+time_diff → end - start
+long_duration → > 120
+________________________________________
+24.
+weight_category → >80 "heavy" else "normal"
+________________________________________
+25.
+net_score → positive - negative
+bad_score → < 0
+
+
+
+# 26
+expense_pipeline <- function(data) {
+  data %>%
+    mutate(
+      total_expense = expense_calc(food, travel, rent),
+      high_expense = high_expense_flag(total_expense)
+    ) %>%
+    group_by(city) %>%
+    summarise(
+      avg_expense = safe_mean(total_expense)
+    )
+}
+# Functions:
+# expense_calc → food + travel + rent
+# high_expense_flag → total_expense > 50000
+# safe_mean → if missing return NA else mean
+
+
+# 27
+distance_time_pipeline <- function(data) {
+  data %>%
+    mutate(
+      ratio = ratio_calc(distance, time),
+      high_ratio = high_ratio_flag(ratio)
+    ) %>%
+    group_by(route) %>%
+    summarise(
+      avg_ratio = safe_mean(ratio)
+    )
+}
+# Functions:
+# ratio_calc → distance / time
+# high_ratio_flag → ratio > 80
+# safe_mean → same rule
+
+
+# 28
+marks_pipeline <- function(data) {
+  data %>%
+    mutate(
+      average = avg_marks(math, science, english),
+      distinction = distinction_flag(average)
+    ) %>%
+    group_by(class) %>%
+    summarise(
+      avg_marks = safe_mean(average)
+    )
+}
+# Functions:
+# avg_marks → (math + science + english) / 3
+# distinction_flag → average ≥ 75
+# safe_mean → same rule
+
+
+# 29
+order_pipeline <- function(data) {
+  data %>%
+    mutate(
+      total = total_order(price, quantity),
+      bulk = bulk_flag(total)
+    ) %>%
+    group_by(customer) %>%
+    summarise(
+      avg_order = safe_mean(total)
+    )
+}
+# Functions:
+# total_order → price * quantity
+# bulk_flag → total > 2000
+# safe_mean → same rule
+
+
+# 30
+energy_pipeline <- function(data) {
+  data %>%
+    mutate(
+      energy = energy_calc(power, time),
+      high_energy = high_energy_flag(energy)
+    ) %>%
+    group_by(machine) %>%
+    summarise(
+      avg_energy = safe_mean(energy)
+    )
+}
+# Functions:
+# energy_calc → power * time
+# high_energy_flag → energy > 1000
+# safe_mean → same rule
+
+
+# 31
+salary_pipeline <- function(data) {
+  data %>%
+    mutate(
+      monthly = monthly_salary(annual),
+      high_income = high_income_flag(monthly)
+    ) %>%
+    group_by(role) %>%
+    summarise(
+      avg_salary = safe_mean(monthly)
+    )
+}
+# Functions:
+# monthly_salary → annual / 12
+# high_income_flag → monthly > 50000
+# safe_mean → same rule
+
+
+# 32
+margin_pipeline <- function(data) {
+  data %>%
+    mutate(
+      margin = margin_calc(profit, revenue),
+      low_margin = low_margin_flag(margin)
+    ) %>%
+    group_by(product) %>%
+    summarise(
+      avg_margin = safe_mean(margin)
+    )
+}
+# Functions:
+# margin_calc → profit / revenue
+# low_margin_flag → margin < 0.1
+# safe_mean → same rule
+
+
+# 33
+time_pipeline <- function(data) {
+  data %>%
+    mutate(
+      duration = duration_calc(start, end),
+      long_duration = long_flag(duration)
+    ) %>%
+    group_by(task) %>%
+    summarise(
+      avg_duration = safe_mean(duration)
+    )
+}
+# Functions:
+# duration_calc → end - start
+# long_flag → duration > 120
+# safe_mean → same rule
+
+
+# 34
+weight_pipeline <- function(data) {
+  data %>%
+    mutate(
+      category = weight_category(weight),
+      heavy = heavy_flag(weight)
+    ) %>%
+    group_by(group) %>%
+    summarise(
+      avg_weight = safe_mean(weight)
+    )
+}
+# Functions:
+# weight_category → >80 "heavy" else "normal"
+# heavy_flag → weight > 80
+# safe_mean → same rule
+
+
+# 35
+score_pipeline <- function(data) {
+  data %>%
+    mutate(
+      net = net_score(positive, negative),
+      bad = bad_flag(net)
+    ) %>%
+    group_by(user) %>%
+    summarise(
+      avg_score = safe_mean(net)
+    )
+}
+# Functions:
+# net_score → positive - negative
+# bad_flag → net < 0
+# safe_mean → same rule
+
+
+# 36
+sales_growth_pipeline <- function(data) {
+  data %>%
+    mutate(
+      growth = growth_calc(prev_sales, curr_sales),
+      decline = decline_flag(growth)
+    ) %>%
+    group_by(region) %>%
+    summarise(
+      avg_growth = safe_mean(growth)
+    )
+}
+# Functions:
+# growth_calc → (curr_sales - prev_sales) / prev_sales
+# decline_flag → growth < 0
+# safe_mean → same rule
+
+
+# 37
+fuel_cost_pipeline <- function(data) {
+  data %>%
+    mutate(
+      cost = fuel_cost_calc(liters, price),
+      high_cost = high_cost_flag(cost)
+    ) %>%
+    group_by(vehicle) %>%
+    summarise(
+      avg_cost = safe_mean(cost)
+    )
+}
+# Functions:
+# fuel_cost_calc → liters * price
+# high_cost_flag → cost > 3000
+# safe_mean → same rule
+
+
+# 38
+conversion_pipeline <- function(data) {
+  data %>%
+    mutate(
+      rate = conv_calc(success, total),
+      good = good_flag(rate)
+    ) %>%
+    group_by(channel) %>%
+    summarise(
+      avg_rate = safe_mean(rate)
+    )
+}
+# Functions:
+# conv_calc → success / total
+# good_flag → rate > 0.2
+# safe_mean → same rule
+
+
+# 39
+temperature_variation_pipeline <- function(data) {
+  data %>%
+    mutate(
+      diff = temp_diff(max_temp, min_temp),
+      high_var = high_var_flag(diff)
+    ) %>%
+    group_by(city) %>%
+    summarise(
+      avg_diff = safe_mean(diff)
+    )
+}
+# Functions:
+# temp_diff → max_temp - min_temp
+# high_var_flag → diff > 15
+# safe_mean → same rule
+
+
+# 40
+inventory_pipeline <- function(data) {
+  data %>%
+    mutate(
+      stock_left = stock_calc(incoming, outgoing),
+      low_stock = low_stock_flag(stock_left)
+    ) %>%
+    group_by(product) %>%
+    summarise(
+      avg_stock = safe_mean(stock_left)
+    )
+}
+# Functions:
+# stock_calc → incoming - outgoing
+# low_stock_flag → stock_left < 50
+# safe_mean → same rule
+
+
+# 41
+delivery_pipeline <- function(data) {
+  data %>%
+    mutate(
+      delay = delay_calc(actual, expected),
+      late = late_flag(delay)
+    ) %>%
+    group_by(city) %>%
+    summarise(
+      avg_delay = safe_mean(delay)
+    )
+}
+# Functions:
+# delay_calc → actual - expected
+# late_flag → delay > 0
+# safe_mean → same rule
+
+
+# 42
+study_pipeline <- function(data) {
+  data %>%
+    mutate(
+      efficiency = study_eff(hours, score),
+      high_eff = high_eff_flag(efficiency)
+    ) %>%
+    group_by(student) %>%
+    summarise(
+      avg_eff = safe_mean(efficiency)
+    )
+}
+# Functions:
+# study_eff → score / hours
+# high_eff_flag → efficiency > 10
+# safe_mean → same rule
+
+
+# 43
+call_pipeline <- function(data) {
+  data %>%
+    mutate(
+      duration = call_duration(start, end),
+      long_call = long_call_flag(duration)
+    ) %>%
+    group_by(agent) %>%
+    summarise(
+      avg_duration = safe_mean(duration)
+    )
+}
+# Functions:
+# call_duration → end - start
+# long_call_flag → duration > 30
+# safe_mean → same rule
+
+
+# 44
+traffic_pipeline <- function(data) {
+  data %>%
+    mutate(
+      density = density_calc(vehicles, road_length),
+      heavy_traffic = heavy_flag(density)
+
+# 1
+flight_pipeline <- function(data) {
+  data %>%
+    mutate(
+      gain = gain_calc(dep_delay, arr_delay),
+      status = status_flag(arr_delay)
+    ) %>%
+    group_by(origin) %>%
+    summarise(
+      avg_gain = safe_mean(gain)
+    )
+}
+# Functions:
+# gain_calc → dep_delay - arr_delay
+# status_flag → arr_delay > 0 → "late" else "on_time"
+# safe_mean → if missing return NA else mean
+
+
+# 2
+sales_pipeline <- function(data) {
+  data %>%
+    mutate(
+      revenue = revenue_calc(price, quantity),
+      high_sale = high_flag(revenue)
+    ) %>%
+    group_by(region) %>%
+    summarise(
+      avg_revenue = safe_mean(revenue)
+    )
+}
+# Functions:
+# revenue_calc → price * quantity
+# high_flag → revenue > 1000
+# safe_mean → same rule
+
+
+# 3
+student_pipeline <- function(data) {
+  data %>%
+    mutate(
+      total = total_marks(math, science, english),
+      pass = pass_flag(total)
+    ) %>%
+    group_by(class) %>%
+    summarise(
+      avg_total = safe_mean(total)
+    )
+}
+# Functions:
+# total_marks → sum of 3
+# pass_flag → total ≥ 120
+# safe_mean → same rule
+
+
+# 4
+order_pipeline <- function(data) {
+  data %>%
+    mutate(
+      discount = discount_calc(price),
+      final = final_price(price, discount)
+    ) %>%
+    group_by(category) %>%
+    summarise(
+      avg_final = safe_mean(final)
+    )
+}
+# Functions:
+# discount_calc → 10% if price > 500 else 0
+# final_price → price - discount
+# safe_mean → same rule
+
+
+# 5
+employee_pipeline <- function(data) {
+  data %>%
+    mutate(
+      bonus = bonus_calc(salary),
+      high_paid = high_flag(salary)
+    ) %>%
+    group_by(department) %>%
+    summarise(
+      avg_salary = safe_mean(salary)
+    )
+}
+# Functions:
+# bonus_calc → 5% salary
+# high_flag → salary > 80000
+# safe_mean → same rule
+
+
+# 6
+speed_pipeline <- function(data) {
+  data %>%
+    mutate(
+      speed = speed_calc(distance, time),
+      fast = fast_flag(speed)
+    ) %>%
+    group_by(vehicle_type) %>%
+    summarise(
+      avg_speed = safe_mean(speed)
+    )
+}
+# Functions:
+# speed_calc → distance / time
+# fast_flag → speed > 60
+# safe_mean → same rule
+
+
+# 7
+profit_pipeline <- function(data) {
+  data %>%
+    mutate(
+      profit = profit_calc(revenue, cost),
+      loss = loss_flag(profit)
+    ) %>%
+    group_by(product) %>%
+    summarise(
+      avg_profit = safe_mean(profit)
+    )
+}
+# Functions:
+# profit_calc → revenue - cost
+# loss_flag → profit < 0
+# safe_mean → same rule
+
+
+# 8
+bmi_pipeline <- function(data) {
+  data %>%
+    mutate(
+      bmi = bmi_calc(weight, height),
+      obese = obese_flag(bmi)
+    ) %>%
+    group_by(gender) %>%
+    summarise(
+      avg_bmi = safe_mean(bmi)
+    )
+}
+# Functions:
+# bmi_calc → weight / height^2
+# obese_flag → bmi > 30
+# safe_mean → same rule
+
+
+# 9
+tax_pipeline <- function(data) {
+  data %>%
+    mutate(
+      tax = tax_calc(income),
+      high_tax = high_flag(tax)
+    ) %>%
+    group_by(state) %>%
+    summarise(
+      avg_tax = safe_mean(tax)
+    )
+}
+# Functions:
+# tax_calc → income * 0.2
+# high_flag → tax > 50000
+# safe_mean → same rule
+
+
+# 10
+age_pipeline <- function(data) {
+  data %>%
+    mutate(
+      category = age_group(age),
+      adult = adult_flag(age)
+    ) %>%
+    group_by(city) %>%
+    summarise(
+      avg_age = safe_mean(age)
+    )
+}
+# Functions:
+# age_group → >18 "adult" else "minor"
+# adult_flag → age > 18
+# safe_mean → same rule
+    ) %>%
+    group_by(area) %>%
+    summarise(
+      avg_density = safe_mean(density)
+    )
+}
+# Functions:
+# density_calc → vehicles / road_length
+# heavy_flag → density > 50
+# safe_mean → same rule
+
+
+# 45
+battery_pipeline <- function(data) {
+  data %>%
+    mutate(
+      usage = battery_usage(start, end),
+      high_usage = high_usage_flag(usage)
+    ) %>%
+    group_by(device) %>%
+    summarise(
+      avg_usage = safe_mean(usage)
+    )
+}
+# Functions:
+# battery_usage → start - end
+# high_usage_flag → usage > 40
+# safe_mean → same rule
+
+
+# 46
+website_pipeline <- function(data) {
+  data %>%
+    mutate(
+      bounce_rate = bounce_calc(bounces, visits),
+      high_bounce = high_bounce_flag(bounce_rate)
+    ) %>%
+    group_by(page) %>%
+    summarise(
+      avg_bounce = safe_mean(bounce_rate)
+    )
+}
+# Functions:
+# bounce_calc → bounces / visits
+# high_bounce_flag → rate > 0.5
+# safe_mean → same rule
+
+
+# 47
+exam_pipeline <- function(data) {
+  data %>%
+    mutate(
+      total = total_calc(part1, part2),
+      pass = pass_flag(total)
+    ) %>%
+    group_by(subject) %>%
+    summarise(
+      avg_score = safe_mean(total)
+    )
+}
+# Functions:
+# total_calc → part1 + part2
+# pass_flag → total ≥ 50
+# safe_mean → same rule
+
+
+# 48
+shipping_pipeline <- function(data) {
+  data %>%
+    mutate(
+      cost = ship_cost(weight, rate),
+      expensive = expensive_flag(cost)
+    ) %>%
+    group_by(zone) %>%
+    summarise(
+      avg_cost = safe_mean(cost)
+    )
+}
+# Functions:
+# ship_cost → weight * rate
+# expensive_flag → cost > 2000
+# safe_mean → same rule
+
+
+# 49
+sleep_pipeline <- function(data) {
+  data %>%
+    mutate(
+      duration = sleep_duration(start, end),
+      low_sleep = low_sleep_flag(duration)
+    ) %>%
+    group_by(person) %>%
+    summarise(
+      avg_sleep = safe_mean(duration)
+    )
+}
+# Functions:
+# sleep_duration → end - start
+# low_sleep_flag → duration < 6
+# safe_mean → same rule
+
+
+# 50
+investment_pipeline <- function(data) {
+  data %>%
+    mutate(
+      returns = return_calc(initial, final),
+      loss = loss_flag(returns)
+    ) %>%
+    group_by(fund) %>%
+    summarise(
+      avg_return = safe_mean(returns)
+    )
+}
+# Functions:
+# return_calc → (final - initial) / initial
+# loss_flag → returns < 0
+# safe_mean → same rule
+****************************************************************************
+
+🔥 1. Flight Performance (Multi-condition + NA handling)
+flight_performance_pipeline <- function(data) {
+  data %>%
+    mutate(
+      efficiency = efficiency_calc(distance, air_time),
+      status = delay_status(arr_delay, dep_delay)
+    ) %>%
+    group_by(carrier) %>%
+    summarise(
+      avg_efficiency = safe_mean(efficiency),
+      delay_rate = safe_mean(status == "delayed")
+    )
+}
+Functions:
+•	efficiency_calc → if air_time == 0 or NA → NA, else distance / air_time 
+•	delay_status → 
+o	if arr_delay > 30 OR dep_delay > 30 → "delayed" 
+o	if both NA → NA 
+o	else "on_time" 
+•	safe_mean → ignore NA, return NA if all NA 
+________________________________________
+🔥 2. Customer Segmentation (Nested conditions)
+customer_pipeline <- function(data) {
+  data %>%
+    mutate(
+      total_spend = spend_calc(price, quantity),
+      segment = segment_flag(total_spend, visits)
+    ) %>%
+    group_by(region) %>%
+    summarise(
+      avg_spend = safe_mean(total_spend)
+    )
+}
+Functions:
+•	spend_calc → price * quantity 
+•	segment_flag → 
+o	spend > 5000 & visits > 10 → "premium" 
+o	spend > 2000 → "regular" 
+o	else "low" 
+•	safe_mean → same rule 
+________________________________________
+🔥 3. Employee Risk Detection (Multiple logical rules)
+employee_risk_pipeline <- function(data) {
+  data %>%
+    mutate(
+      risk_score = risk_calc(absent_days, late_days),
+      risk_flag = risk_flag_fn(risk_score, salary)
+    ) %>%
+    group_by(department) %>%
+    summarise(
+      avg_risk = safe_mean(risk_score)
+    )
+}
+Functions:
+•	risk_calc → (absent_days * 2) + late_days 
+•	risk_flag_fn → 
+o	risk_score > 20 & salary < 30000 → "high_risk" 
+o	risk_score > 10 → "medium" 
+o	else "low" 
+•	safe_mean → same rule 
+________________________________________
+🔥 4. E-commerce Fraud Detection (Edge cases + conditions)
+fraud_pipeline <- function(data) {
+  data %>%
+    mutate(
+      order_value = order_calc(price, quantity),
+      fraud_flag = fraud_check(order_value, payment_type, country)
+    ) %>%
+    group_by(country) %>%
+    summarise(
+      fraud_rate = safe_mean(fraud_flag)
+    )
+}
+Functions:
+•	order_calc → price * quantity 
+•	fraud_check → 
+o	order_value > 10000 & payment_type == "cash" → TRUE 
+o	country != "home_country" & order_value > 5000 → TRUE 
+o	else FALSE 
+•	safe_mean → same rule 
+________________________________________
+🔥 5. Health Monitoring (Complex classification)
+health_pipeline <- function(data) {
+  data %>%
+    mutate(
+      bmi = bmi_calc(weight, height),
+      health_status = health_flag(bmi, age)
+    ) %>%
+    group_by(gender) %>%
+    summarise(
+      avg_bmi = safe_mean(bmi)
+    )
+}
+Functions:
+•	bmi_calc → weight / (height^2), if height == 0 → NA 
+•	health_flag → 
+o	bmi > 30 & age > 40 → "high_risk" 
+o	bmi between 18.5–25 → "normal" 
+o	else "moderate" 
+•	safe_mean → same rule
+
+
+install.packages("officer")
+install.packages("dplyr")
+
+library(officer)
+
+doc <- read_docx()
+
+add_code_block <- function(doc, text) {
+  doc <- body_add_par(doc, text, style = "Normal")
+  doc <- body_add_par(doc, " ", style = "Normal")
+  return(doc)
+}
+
+content <- "
+
+# 51
+flight_benchmark_pipeline <- function(flights, carriers) {
+  flights %>%
+    left_join(carriers, by = 'carrier') %>%
+    mutate(
+      delay = delay_calc(arr_delay),
+      delay_rank = rank_delay(delay, carrier)
+    ) %>%
+    group_by(carrier_name) %>%
+    summarise(
+      avg_delay = safe_mean(delay),
+      worst_rank = max(delay_rank)
+    )
+}
+
+# 52
+customer_trend_pipeline <- function(data) {
+  data %>%
+    arrange(customer_id, date) %>%
+    mutate(
+      prev_spend = lag(spend),
+      spend_change = change_calc(spend, prev_spend),
+      trend = trend_flag(spend_change)
+    ) %>%
+    group_by(customer_id) %>%
+    summarise(
+      avg_change = safe_mean(spend_change)
+    )
+}
+
+# 53
+promotion_pipeline <- function(emp, perf) {
+  emp %>%
+    left_join(perf, by = 'emp_id') %>%
+    mutate(
+      score = score_calc(performance, attendance),
+      eligible = promotion_flag(score, years)
+    ) %>%
+    group_by(department) %>%
+    summarise(
+      avg_score = safe_mean(score)
+    )
+}
+
+# 54
+stock_pipeline <- function(data) {
+  data %>%
+    arrange(stock_id, date) %>%
+    mutate(
+      prev_close = lag(close),
+      momentum = momentum_calc(close, prev_close),
+      strength = rank_momentum(momentum)
+    ) %>%
+    group_by(stock_id) %>%
+    summarise(
+      avg_momentum = safe_mean(momentum)
+    )
+}
+
+# 55
+fraud_pipeline <- function(transactions, users) {
+  transactions %>%
+    left_join(users, by = 'user_id') %>%
+    mutate(
+      risk = fraud_risk(amount, country, age),
+      fraud_flag = fraud_flag_fn(risk)
+    ) %>%
+    group_by(country) %>%
+    summarise(
+      fraud_rate = safe_mean(fraud_flag)
+    )
+}
+
+# 56
+ride_pipeline <- function(data) {
+  data %>%
+    arrange(driver_id, time) %>%
+    mutate(
+      prev_ride = lag(distance),
+      efficiency = efficiency_calc(distance, duration)
+    ) %>%
+    group_by(driver_id) %>%
+    summarise(
+      avg_efficiency = safe_mean(efficiency)
+    )
+}
+
+# 57
+patient_pipeline <- function(patients, history) {
+  patients %>%
+    left_join(history, by = 'patient_id') %>%
+    mutate(
+      risk = risk_score(age, bp, sugar),
+      high_risk = risk_flag(risk)
+    ) %>%
+    group_by(hospital) %>%
+    summarise(
+      avg_risk = safe_mean(risk)
+    )
+}
+
+# 58
+product_pipeline <- function(data) {
+  data %>%
+    mutate(
+      score = score_calc(sales, reviews),
+      rank = rank_product(score)
+    ) %>%
+    group_by(category) %>%
+    summarise(
+      avg_score = safe_mean(score)
+    )
+}
+
+# 59
+engagement_pipeline <- function(data) {
+  data %>%
+    arrange(user_id, date) %>%
+    mutate(
+      prev_eng = lag(engagement),
+      drop = drop_calc(engagement, prev_eng),
+      churn_risk = churn_flag(drop)
+    ) %>%
+    group_by(user_id) %>%
+    summarise(
+      avg_eng = safe_mean(engagement)
+    )
+}
+
+# 60
+supply_pipeline <- function(orders, logistics) {
+  orders %>%
+    left_join(logistics, by = 'order_id') %>%
+    mutate(
+      delay = delay_calc(planned_date, actual_date),
+      delay_level = delay_flag(delay)
+    ) %>%
+    group_by(region) %>%
+    summarise(
+      avg_delay = safe_mean(delay)
+    )
+}
+"
+
+doc <- body_add_par(doc, content)
+
+print(doc, target = "questions_51_to_60.docx")
