@@ -1,0 +1,271 @@
+library(tidyverse)
+library(dplyr)
+#***********Scenario 1: Temperature Cleaning & Labeling
+
+#You have a dataset weather with a column temp_c.
+
+#Tasks:
+  
+ # Replace missing temperatures with the average temperature.
+#Create a category:
+ # "cold" if < 10
+#"moderate" if 10–25
+#"hot" if > 25
+#Keep only the used columns.
+***************************************************************************************
+view(weather)
+
+weather_temp <- function(data, temp) {
+  data %>% 
+    mutate(
+      {{temp}} := ifelse(
+        is.na({{temp}}),
+        mean({{temp}},na.rm =TRUE), {{temp}}),
+      temp_category = case_when(
+        {{temp}} < 10  ~ "cold",
+        {{temp}} >= 10 & {{temp}} <= 25 ~ "Moderate",
+        {{temp}} > 25 ~ "hot"
+      ),.keep = "used"
+    ) %>% 
+    select({{temp}}, temp_category)
+}
+  
+  weather <- weather_temp(weather, temp)
+weather  
+
+#******************
+#*🧠 Scenario 2: Salary Adjustment
+
+#Dataset: employees with column salary.
+
+#Tasks:
+  
+ # Write a function to increase salary:
+  #If salary < 3000 → +20%
+#Otherwise → +10%
+#Create a category:
+ # "low" < 3000
+#"mid" 3000–7000
+#"high" > 7000
+#Use mutate() to apply both.
+#***************************************************************
+library(tidyverse)
+
+set.seed(123)
+
+employees <- tibble(
+  id = 1:85,
+  name = paste0("Emp", 1:85),
+  department = sample(c("HR", "IT", "Finance", "Sales"), 85, replace = TRUE),
+  salary = sample(2000:10000, 85, replace = TRUE),
+  age = sample(21:60, 85, replace = TRUE),
+  experience = sample(0:35, 85, replace = TRUE),
+  city = sample(c("Singapore", "KL", "Bangkok", "Jakarta"), 85, replace = TRUE),
+  performance_score = sample(1:100, 85, replace = TRUE),
+  bonus_eligible = sample(c("Yes", "No"), 85, replace = TRUE),
+  hire_year = sample(2000:2024, 85, replace = TRUE)
+)
+employees
+
+Salary_increment <- function(x) {
+  ifelse(
+  x < 3000 , 
+  x*1.20,
+  x * 1.10
+  )
+}
+salary_category <- function(x) {
+  case_when(
+    x < 3000 ~ "Low",
+    x >= 3000 & x <=7000 ~ "mid",
+    x > 7000 ~ "high"
+  )
+}
+
+Salary_adjustment <- employees %>% 
+  mutate(New_Salary =Salary_increment(salary),
+         category = salary_category(salary)
+  )
+Salary_adjustment
+
+employees %>% 
+  mutate(
+    new_salary =ifelse(salary < 3000, salary *1.20, salary*1.10),
+    
+    category= case_when(
+      salary < 3000 ~ "low",
+      salary <= 7000 ~ "mid",
+      TRUE ~ "High"
+    )
+    ,.keep = "used"
+  )
+
+#***********************************************************************
+#*🧠 Scenario 3: Exam Score Processing
+
+#Dataset: students with column score.
+
+T#asks:
+  
+  #Replace NA scores with 0.
+#Create grade categories:
+ # "Fail" < 50
+#"Pass" 50–75
+#"Distinction" > 75
+#******************************************************************
+set.seed(456)
+
+students <- tibble(
+ # id = 1:85,
+  name = paste0("Student", 1:85),
+  course = sample(c("Math", "Science", "Arts", "Business"), 85, replace = TRUE),
+  score = sample(c(NA, 1:82), 85, replace = TRUE),
+  age = sample(18:30, 85, replace = TRUE),
+  gender = sample(c("M", "F"), 85, replace = TRUE),
+  attendance = sample(50:100, 85, replace = TRUE),
+  study_hours = sample(1:10, 85, replace = TRUE),
+  assignment_score = sample(0:100, 85, replace = TRUE),
+  country = sample(c("SG", "MY", "TH", "ID"), 85, replace = TRUE)
+)
+students
+view(students)
+
+students_fun <- function(data, score) {
+  data %>% 
+    mutate(
+      {{score}} := if_else(
+        is.na({{score}}), 0,{{score}}
+      ),
+  result =case_when(
+    {{score}} < 50 ~ "Fail",
+    {{score}} <=75  ~ "Pass",
+    TRUE ~ "Distraction"
+   )
+  )
+}
+students_result <- students_fun(students, score)
+students_result
+View(students_result)
+
+#or
+
+na_zero <- function(x){
+  if_else(is.na(x),0,x)
+}
+
+exam_grade <- function(x) {
+  Grade = case_when(
+    x < 50 ~ "Fail",
+    x <=75 ~" Pass",
+    TRUE ~ "Distinction"
+  )
+}
+
+score_grade <- students %>% 
+  mutate(Final_grade = exam_grade(score),
+         revised_score=na_zero(score))
+score_grade
+View(score_grade)
+
+#******************************************************
+#*🧠 Scenario 4: E-commerce Orders
+
+#Dataset: orders with delivery_days.
+
+#Tasks:
+  
+ # Replace NA with median delivery time.
+Categorize:
+  #"fast" ≤ 2
+#"normal" 3–5
+#"slow" > 5
+#********************************************************************************
+  
+  set.seed(789)
+
+orders <- tibble(
+  order_id = 1:850,
+  customer = paste0("C", 1:850),
+  product_category = sample(c("Electronics", "Fashion", "Grocery", "Home"), 850, replace = TRUE),
+  delivery_days = sample(c(NA, 1:10), 850, replace = TRUE),
+  order_value = sample(10:500, 850, replace = TRUE),
+  quantity = sample(1:5, 850, replace = TRUE),
+  payment_method = sample(c("Card", "Cash", "E-wallet"), 850, replace = TRUE),
+  city = sample(c("Singapore", "Penang", "Hanoi", "Manila"), 850, replace = TRUE),
+  discount_applied = sample(c(0, 5, 10, 15), 850, replace = TRUE),
+  order_year = sample(2020:2026, 850, replace = TRUE)
+)
+orders
+View(orders)
+
+order_new <- function(data, delivery_days) {
+  data %>% 
+    mutate(
+      {{ delivery_days }} := ifelse(
+        is.na({{ delivery_days }}),
+        median({{ delivery_days }}, na.rm = TRUE),
+        {{ delivery_days }}
+      )
+,
+order_catergory = case_when(
+  {{delivery_days}} <= 2 ~ "Fast",
+  {{delivery_days}}  <=5 ~ "normal",
+  TRUE  ~ "slow"
+)
+)
+}
+
+
+
+order_status <- order_new(orders, delivery_days)
+order_status
+view(order_status)
+
+#*******************************************************************************
+#*🧠 Scenario 5: Gym Workout Duration
+
+#Dataset: workouts with duration (minutes).
+
+#Tasks:
+  
+ # Replace NA with 30.
+#Categorize:
+ # "short" < 20
+#"medium" 20–45
+#"long" > 45
+
+#*******************************************************************************
+
+set.seed(101)
+
+workouts <- tibble(
+  workout_id = 1:85,
+  user = paste0("U", 1:85),
+  workout_type = sample(c("Cardio", "Strength", "Yoga", "HIIT"), 85, replace = TRUE),
+  duration = sample(c(NA, 10:90), 85, replace = TRUE),
+  calories_burned = sample(50:800, 85, replace = TRUE),
+  heart_rate = sample(60:180, 85, replace = TRUE),
+  intensity = sample(c("Low", "Medium", "High"), 85, replace = TRUE),
+  day = sample(1:7, 85, replace = TRUE),
+  trainer = sample(c("A", "B", "C"), 85, replace = TRUE),
+  location = sample(c("Gym", "Home", "Park"), 85, replace = TRUE)
+)
+view(workouts)
+
+to_thirty <- function(x) {
+  ifelse(is.na(x), 30, x)
+}
+
+durations <- function(x) {
+  case_when(
+    x < 20 ~ "short",
+    x <= 45 ~ "medium",
+    TRUE ~ "long"
+  )
+}
+
+Gym_dura <- workouts %>% 
+  mutate(
+    duration = to_thirty(duration),
+    workout_speed = durations(duration))
+Gym_dura
