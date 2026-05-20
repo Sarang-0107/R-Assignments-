@@ -1,0 +1,277 @@
+library(dplyr)
+
+set.seed(123)  # for reproducibility
+
+# Create 70 room availability records
+rooms <- tibble(
+  room_id = sample(100:120, 80, replace = TRUE),
+  start_date = as.Date("2024-01-01") + sample(0:60, 80, replace = TRUE),
+  end_date   = start_date + sample(2:10, 80, replace = TRUE)
+)
+rooms
+View(rooms)
+# Create 80 booking records
+bookings <- tibble(
+  booking_id = 1:80,
+  room_id = sample(100:125, 80, replace = TRUE),  # includes some invalid rooms
+  start_date = as.Date("2024-01-01") + sample(0:60, 80, replace = TRUE),
+  end_date   = start_date + sample(1:12, 80, replace = TRUE)
+)
+bookings
+View(bookings)
+
+#Room & Booking Join Scenarios
+#Basic Overlap
+#Find bookings that overlap with room availability
+
+bookings %>% 
+  inner_join(rooms, by =join_by(room_id, start_date <= end_date,
+             end_date >= start_date))
+
+#Find rooms that have at least one booking overlap
+bookings %>% 
+  inner_join(rooms, by = join_by(room_id,start_date <= end_date,
+                                 end_date >= start_date)) %>% distinct(room_id)
+
+#🔵 No Match Cases
+#Find bookings that do not match any room availability
+no_match <- bookings %>% 
+  anti_join(rooms, by  = join_by(room_id,start_date <= end_date,
+                                 end_date >= start_date))
+no_match
+
+#Find rooms that were never booked
+never_booked <- rooms %>% 
+  anti_join(bookings, by= "room_id")
+never_booked
+
+#🔵 Full vs Partial Overlap
+#Find bookings fully inside a room’s availability period
+full <- bookings %>% 
+  semi_join(
+    rooms,
+    by = join_by(
+      room_id,
+      start_date  >= start_date ,
+      end_date  <= end_date  
+    )
+  )
+full
+#Find bookings that partially overlap with availability
+partial  <- bookings %>% 
+  semi_join(
+    rooms,
+    by = join_by(
+      room_id,
+      start_date  <= start_date ,
+      end_date  >= end_date  
+    )
+  )
+partial
+
+#Find bookings that extend beyond availability dates
+
+extend  <- bookings %>% 
+  semi_join(
+    rooms,
+    by = join_by(
+      room_id,
+      start_date  < start_date |  end_date  > end_date  
+    )
+  )
+extend
+
+extend_start <- bookings %>%
+  semi_join(
+    rooms,
+    by = join_by(
+      room_id,
+      start_date < start_date 
+    )
+  )
+
+extend_end <- bookings %>%
+  semi_join(
+    rooms,
+    by = join_by(
+      room_id,
+      end_date < end_date  
+    )
+  )
+ extend <- bind_rows(extend_start,extend_end) 
+ extend
+ 
+ 
+#🔵 Conflict Detection
+#Find bookings that overlap with other bookings (double booking)
+ other<- bookings %>% 
+   inner_join(bookings,
+              by = join_by(
+                room_id,
+                start_date <= end_date,
+                end_date >= start_date
+              ),
+              suffix = c(".x",".y")
+   ) %>% 
+   filter(booking_id.x != booking_id.y) %>% 
+   distinct(booking_id.x, .keep_all = TRUE)
+ other
+ 
+
+ 
+#Find rooms that have conflicting bookings at the same time
+ 
+ conflicting<- bookings %>% 
+   inner_join(bookings,
+              by = join_by(
+                room_id,
+                start_date <= end_date,
+                end_date >= start_date
+              ),
+              suffix = c(".x",".y")
+   ) %>% 
+   filter(booking_id.x < booking_id.y) %>% 
+   distinct(booking_id.x, .keep_all = TRUE)
+ conflicting
+ 
+ #Time-Based Conditions
+   #Find bookings that start within an availability window
+   results <- bookings %>% 
+     semi_join(
+       rooms,
+       by =  join_by(room_id,
+                     x$start_date >= y$start_date,
+                     x$start_date <= y$end_date
+       )
+     )
+   results 
+ #Find bookings that end within an availability window
+   end <- bookings %>% 
+     semi_join(
+       rooms,
+       by =  join_by(room_id,
+                     x$end_date >= y$start_date,
+                     x$end_date <= y$end_date
+       )
+     )
+   end 
+   
+ #Find bookings that start before availability but end inside it
+   
+   Partial <- bookings %>% 
+     semi_join(
+       rooms,
+       by = join_by(room_id,
+                    x$start_date < y$start_date,
+                    x$end_date <= y$start_date,
+                    x$end_date <= y$end_date
+       ),.keep_all = TRUE
+     )
+partial
+
+#🔵 Gap Analysis
+#Find bookings that do not fit into any availability window
+notfit <- bookings %>% 
+  anti_join(
+    rooms,
+    by = join_by(room_id,
+                 x$start_date >= y$start_date,
+                 x$end_date <= y$end_date
+                 )
+  )
+notfit
+
+
+#Find gaps between bookings for each room
+gaps <- bookings %>% 
+  arrange(room_id,start_date) %>% 
+  group_by(room_id) %>% 
+  mutate(
+    next_start = lead(start_date),
+    gap_start = end_date,
+    end_gap = next_start,
+    gap_days = as.numeric(next_start - end_date)
+  ) %>% 
+  filter(!is.na(next_start), gap_days > 0)
+gaps
+
+#Find unused availability periods
+
+
+unused <- bookings %>% 
+  arrange(room_id, start_date) %>% 
+  group_by(room_id) %>% 
+  mutate(
+    next_start = lead(start_date),
+      gap_start = end_date,
+    gap_end = next_start
+  ) %>% 
+  filter(!is.na(next_start)) %>% 
+  select(room_id, gap_start, gap_end)
+unused
+
+#🔵 Nearest Matching
+#Match each booking with the closest availability period
+library(dplyr)
+
+gaps <- bookings %>%
+  arrange(room_id, start_date) %>%
+  group_by(room_id) %>%
+  mutate(
+    gap_start = end_date,
+    gap_end = lead(start_date)
+  ) %>%
+  filter(!is.na(gap_end)) %>%
+  select(room_id, gap_start, gap_end)
+gaps
+
+closet_gaps <-
+  bookings %>% 
+  inner_join(gaps,
+             by = "room_id"
+             ) %>% 
+  mutate(
+    distance = abs(as.numeric(start_date - gap_end))
+  ) %>% 
+  group_by(booking_id) %>% 
+  slice_min(distance, n = 1) %>%
+  ungroup()
+closet_gaps
+
+#Find the nearest available room for each booking
+nearest <- bookings %>%
+  inner_join(rooms, by = "room_id") %>%
+  mutate(
+    distance = abs(start_date.x - start_date.y)
+  ) %>%
+  group_by(booking_id) %>%
+  slice_min(distance, n = 1)
+
+nearest
+
+#🔵 Multi-Match Situations
+#Find bookings that match multiple availability periods
+mutli <- bookings %>% 
+  inner_join(rooms, join_by( room_id,
+            end_date >= start_date,
+            end_date <= end_date)
+  )
+mutli
+
+multi_mathces <- mutli %>% 
+  group_by(booking_id) %>% 
+  summarise(n = n(), .groups = "drop") %>% 
+  filter( n > 1 )
+multi_mathces
+#Find rooms that are linked to multiple bookings
+
+mutliple <- bookings %>% 
+  inner_join(rooms, join_by(room_id,
+                    start_date <= end_date,
+                    end_date <= start_date))
+mutliple
+
+mutliple_booking <- mutliple %>% 
+  group_by(booking_id) %>% 
+  summarise(n = n(), .groups = "drop")
+mutliple_booking
