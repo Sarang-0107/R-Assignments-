@@ -1,0 +1,174 @@
+R DAILY USE FUNCTIONS CHEAT SHEET
+
+1. DATA IMPORT / EXPORT
+read.csv()
+read.table()
+read_excel()
+write.csv()
+saveRDS()
+readRDS()
+
+2. DATA INSPECTION
+head()
+tail()
+str()
+summary()
+dim()
+nrow()
+ncol()
+names()
+glimpse()
+
+3. DATA SELECTION & FILTERING
+select()
+filter()
+arrange()
+slice()
+distinct()
+
+4. DATA TRANSFORMATION
+mutate()
+transmute()
+rename()
+ifelse()
+case_when()
+
+5. AGGREGATION / SUMMARIZATION
+group_by()
+summarise()
+count()
+mean()
+sum()
+min()
+max()
+sd()
+
+6. VECTOR OPERATIONS
+c()
+length()
+sort()
+unique()
+rep()
+seq()
+pull()
+
+7. LOGICAL OPERATORS
+== != > < >= <=
+& | !
+is.na()
+
+8. MISSING DATA
+is.na()
+na.omit()
+replace_na()
+
+9. STRING FUNCTIONS
+paste()
+paste0()
+substr()
+nchar()
+toupper()
+tolower()
+grep()
+gsub()
+
+| Function    | Purpose                     | Example               |
+| ----------- | --------------------------- | --------------------- |
+| `paste()`   | Join text with separator    | `paste("A","B")`      |
+| `paste0()`  | Join text without separator | `paste0("A","B")`     |
+| `substr()`  | Extract part of string      | `substr("Hello",1,3)` |
+| `nchar()`   | Count characters            | `nchar("Hello")`      |
+| `toupper()` | Uppercase text              | `toupper("hi")`       |
+| `tolower()` | Lowercase text              | `tolower("HI")`       |
+| `grep()`    | Search pattern              | `grep("a", x)`        |
+| `gsub()`    | Replace text                | `gsub("a","b",x)`     |
+
+
+10. DATE & TIME
+Sys.Date()
+Sys.time()
+as.Date()
+format()
+ymd()
+month()
+year()
+
+11. JOINS
+inner_join()
+left_join()
+right_join()
+full_join()
+
+12. PIPES
+%>%
+|>
+
+13. VISUALIZATION
+ggplot()
+geom_point()
+geom_line()
+geom_bar()
+labs()
+theme()
+
+14. APPLY FUNCTIONS
+apply()
+lapply()
+sapply()
+tapply()
+
+| Function   | Works On          | Returns           | Main Use          |
+| ---------- | ----------------- | ----------------- | ----------------- |
+| `apply()`  | matrix/data frame | vector/matrix     | rows & columns    |
+| `lapply()` | list              | list              | apply to list     |
+| `sapply()` | list/vector       | simplified output | easy output       |
+| `tapply()` | grouped data      | grouped result    | category analysis |
+
+
+| Function   | Think Like            |
+| ---------- | --------------------- |
+| `apply()`  | apply on rows/columns |
+| `lapply()` | list apply            |
+| `sapply()` | simple apply          |
+| `tapply()` | table/group apply     |
+
+
+
+15. BASIC MATH
++ - * /
+log()
+sqrt()
+round()
+abs()
+
+16. SYSTEM FUNCTIONS
+setwd()
+getwd()
+rm()
+ls()
+library()
+
+
+🧠 Most Frequently Used (Top 15 Shortcut List)
+If you remember only a few, focus here:
+
+filter()
+select()
+mutate()
+summarise()
+group_by()
+arrange()
+pull()
+head()
+str()
+summary()
+ggplot()
+%>%
+left_join()
+ifelse()
+is.na()
+
+
+✅ Final Tip
+You don’t need to memorize all functions.
+👉 Focus on patterns (filter → transform → summarize → visualize)
