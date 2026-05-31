@@ -1,0 +1,58 @@
+check_AE <- function(state, cfg) {    # <-- rename to check_<your_Rule_Set>
+  
+  domains      <- state$domains       # named list of domain data frames
+  active_rules <- state$active_rules  # named logical: TRUE = check is ON
+  
+  if (is.null(domains$ae) || nrow(domains$ae)==0) {
+    message("  WARNING [AE]: domains$ae is empty - skipping.") ; 
+    return(state)
+  }
+  ae <- domains$ae
+  
+  ##AECHK001 - AE end date is before the start date
+  if (isTRUE(active_rules["AECHK001"])) {
+    # df <- ae$your_domain
+    AECHK001 <- ae |>  
+      dplyr::filter((!is.na(AESTDTC)|AESTDTC!="")& (!is.na(AEENDTC)|(AEENDTC)!="")) |> 
+      dplyr::mutate(
+        AESTDTC_d = as.Date(AESTDTC ),
+        AEENDTC_d = as.Date(AEENDTC )
+      ) |>
+      dplyr::mutate(flag = dplyr::if_else(AESTDTC_d >= AEENDTC_d, "Error", "Valid")
+      ) |> 
+      dplyr::filter(flag == "Error") |>
+      #dplyr::filter(/* your condition */) |> 
+      dplyr::mutate(
+        subj_id     = USUBJID,
+        vis_id      = NA_real_,
+        description = paste0("AE end date is (AEENDTC) ",AEENDTC,"before start date(AESTDTC)",AESTDTC,"for AE-term:",
+                             AETERM,"(AESEQ =",AESEQ)
+      ) |> 
+      dplyr::select(subj_id, vis_id, description)
+    # Step 4 - Collect findings into the master issues table
+    state <- collect_findings(state, AECHK001, id = "AECHK001")
+  }
+
+##AECHK003 - Missing AE outcome (AEOUT)
+
+if (isTRUE(active_rules["AECHK003"])) {
+  # df <- ae$your_domain
+  AECHK003 <- ae |>
+    dplyr::mutate(
+      flag_outcoumes = dplyr::case_when(
+        is.na(AEOUT) ~ "Missing",
+        AEOUT == "" ~ "Missing",
+        TRUE        ~ "Present"
+      )
+    ) |>
+    dplyr::mutate(
+      subj_id     = USUBJID,
+      vis_id      = NA_real_,
+      description = paste0("Missing AE outcome (AEOUT) for AE-term: ",AETERM," (AESEQ = ", AESEQ)
+    ) |>
+    dplyr::select(subj_id, vis_id, description)
+  # Step 4 - Collect findings into the master issues table
+  state <- collect_findings(state, AECHK003, id = "AECHK003")
+}
+state
+}
